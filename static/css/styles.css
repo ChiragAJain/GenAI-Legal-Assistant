@@ -1,52 +1,164 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #f4f4f9;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e1eafc, #c4d7f7);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Background overlay with subtle animated shapes */
+.background-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+.background-shape {
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #007bff, #0096ff);
+    border-radius: 50%;
+    z-index: 1;
+    opacity: 0.15;
+    animation: moveShape 10s infinite alternate;
+}
+
+/* Static shapes */
+.background-overlay::before,
+.background-overlay::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+    background: #007bff;
+}
+
+.background-overlay::before {
+    width: 150px;
+    height: 150px;
+    top: 10%;
+    left: 20%;
+}
+
+.background-overlay::after {
+    width: 200px;
+    height: 200px;
+    bottom: 15%;
+    right: 15%;
+}
+
+/* Animated shapes */
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spinner-shape {
+    position: absolute;
+    border: 4px solid #007bff;
+    border-radius: 50%;
+    opacity: 0.05;
+    animation: rotate 10s linear infinite;
+}
+
+.spinner-shape.one {
+    width: 100px;
+    height: 100px;
+    top: 30%;
+    left: 70%;
+    animation-duration: 8s;
+}
+
+.spinner-shape.two {
+    width: 80px;
+    height: 80px;
+    bottom: 20%;
+    left: 25%;
+    animation-duration: 12s;
 }
 
 .container {
+    position: relative;
+    z-index: 2;
     width: 90%;
-    max-width: 600px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 1.5s ease;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 h1, h2 {
     color: #333;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
 form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    font-family: Arial, sans-serif;
 }
 
 input[type="file"],
 input[type="number"],
 textarea {
-    padding: 8px;
+    padding: 10px;
     font-size: 1em;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+input[type="file"]:hover,
+input[type="number"]:hover,
+textarea:hover {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
 }
 
 button {
-    padding: 10px;
+    padding: 12px;
     background: #007bff;
     color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background 0.3s ease, transform 0.2s;
 }
 
 button:hover {
     background: #0056b3;
+    transform: translateY(-2px) scale(1.05);
+}
+
+button:active {
+    transform: translateY(1px) scale(0.98);
 }
 
 #result {
@@ -56,15 +168,20 @@ button:hover {
 #downloadLink {
     color: #007bff;
     text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
 }
 
 #downloadLink:hover {
+    color: #0056b3;
     text-decoration: underline;
 }
 
 #feedbackStatus {
     color: green;
+    font-weight: bold;
 }
+
 /* Loader container styling */
 #loader {
     display: flex;
@@ -77,10 +194,10 @@ button:hover {
 
 /* Spinner animation */
 .spinner {
-    width: 40px;
-    height: 40px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #007bff;
+    width: 50px;
+    height: 50px;
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #007bff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -88,4 +205,28 @@ button:hover {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .background-overlay::before,
+    .background-overlay::after {
+        width: 100px;
+        height: 100px;
+    }
+
+    .spinner-shape.one {
+        width: 70px;
+        height: 70px;
+    }
+
+    .spinner-shape.two {
+        width: 50px;
+        height: 50px;
+    }
 }
