@@ -1,9 +1,9 @@
 # Terms and Condition Summariser
 This software engineering project helps summarise a terms and condition `.pdf` and `.txt` file to `.pdf` file with simplified legal jargon with custom word limit for each paragraph such that users of any background can understand the Terms and Conditions and face no unexpected clauses.
+<hr>
 
 ## Models
-  pre-trained [Legal Pegasus model](https://huggingface.co/nsi319/legal-pegasus)
-<hr>
+Pre-trained [Legal Pegasus model](https://huggingface.co/nsi319/legal-pegasus)
 
 ## Model Piperline
 The text from the `.pdf` file is extracted and fed to the pegasus model with minimum and maximum word limit for each paragraph, along with heading lookups which it uses to segregate the text under respective headings while giving the summarised file.
