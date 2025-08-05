@@ -13,10 +13,6 @@ A modern, responsive web application that simplifies complex legal documents usi
 - **📱 Drag & Drop** - Easy file upload with drag and drop support
 - **💬 Feedback System** - Built-in user feedback collection
 
-## 🚀 Live Demo
-
-[Deploy your own instance](#deployment) or run locally following the setup instructions below.
-
 ## 🛠️ Technology Stack
 
 - **Backend**: Flask (Python)
@@ -57,21 +53,6 @@ A modern, responsive web application that simplifies complex legal documents usi
 4. **Open your browser**
    Navigate to `http://localhost:5000`
 
-## 🌐 Deployment
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions for:
-- Heroku
-- Railway
-- Render
-- DigitalOcean App Platform
-
-### Quick Heroku Deploy
-
-```bash
-heroku create your-app-name
-git push heroku main
-heroku open
-```
 
 ## 📱 Responsive Design
 
