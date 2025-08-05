@@ -5,10 +5,17 @@ try:
     # Try to import the full AI-powered version
     from summariser import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
     AI_MODE = True
-except ImportError:
+    print("✅ AI mode loaded successfully")
+except ImportError as e:
     # Fallback to lightweight version for deployment
-    from summariser_lite import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
-    AI_MODE = False
+    print(f"⚠️ AI mode failed to load: {e}")
+    try:
+        from summariser_lite import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
+        AI_MODE = False
+        print("✅ Lite mode loaded successfully")
+    except ImportError as e2:
+        print(f"❌ Both modes failed to load: {e2}")
+        raise
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Set file size limit to 8MB
@@ -16,6 +23,11 @@ app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Set file size limit to 8MB
 @app.route('/')
 def index():
     return render_template('index.html', ai_mode=AI_MODE)
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint for Railway deployment."""
+    return jsonify({"status": "healthy", "mode": "AI" if AI_MODE else "Lite"}), 200
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
