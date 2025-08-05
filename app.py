@@ -1,13 +1,21 @@
 from flask import Flask, request, jsonify, send_file, render_template
-from summariser import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
 import os
+
+try:
+    # Try to import the full AI-powered version
+    from summariser import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
+    AI_MODE = True
+except ImportError:
+    # Fallback to lightweight version for deployment
+    from summariser_lite import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
+    AI_MODE = False
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Set file size limit to 8MB
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', ai_mode=AI_MODE)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():

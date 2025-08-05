@@ -30,6 +30,11 @@
             <div class="hero-section">
                 <h2 class="hero-title">Upload Your Terms & Conditions</h2>
                 <p class="hero-description">Get an easy-to-understand summary of complex legal documents in seconds</p>
+                {% if ai_mode %}
+                <div class="mode-indicator ai-mode">🤖 AI-Powered Analysis</div>
+                {% else %}
+                <div class="mode-indicator lite-mode">⚡ Fast Rule-Based Analysis</div>
+                {% endif %}
             </div>
 
             <div id="loader" class="loader" style="display: none;">
