@@ -1,20 +1,105 @@
-# Terms and Condition Summariser
-This software engineering project helps summarise a terms and condition `.pdf` and `.txt` file to `.pdf` file with simplified legal jargon with custom word limit for each paragraph such that users of any background can understand the Terms and Conditions and face no unexpected clauses.
-<hr>
+# Terms and Conditions Summarizer
 
-## Models
-Pre-trained [Legal Pegasus model](https://huggingface.co/nsi319/legal-pegasus)
+A modern, responsive web application that simplifies complex legal documents using AI. Upload your Terms & Conditions files and get easy-to-understand summaries with customizable length settings.
 
-## Model Piperline
-The text from the `.pdf` file is extracted and fed to the pegasus model with minimum and maximum word limit for each paragraph, along with heading lookups which it uses to segregate the text under respective headings while giving the summarised file.
-The legal-pegasus model extracts essential clauses from the terms and conditions file and rephrases them without changing the meaning of it. <br>
-This modified text is then forwarded to [KeyBert](https://pypi.org/project/keybert/) which replaces high vocabulary words with everyday used words. <br>
-The text is then written into a `.pdf` file and given out as an output. The text is visible on the output page with an option to download the `.pdf` file.
+## ✨ Features
 
-## Web-Application
-The web application with a modular and scalable Flask-based backend is locally hosted with a simple and static front-end with an option to provide feedback which is stored in a JSON file.
+- **📱 Fully Responsive Design** - Works seamlessly on mobile, tablet, and desktop
+- **🤖 AI-Powered Summarization** - Uses Legal Pegasus model for accurate legal text processing
+- **📄 Multiple File Formats** - Supports PDF, TXT, and DOCX files (up to 8MB)
+- **⚙️ Customizable Output** - Adjust summary length with min/max word limits
+- **💾 PDF Export** - Download summaries as formatted PDF files
+- **🎨 Modern UI/UX** - Clean, intuitive interface with smooth animations
+- **📱 Drag & Drop** - Easy file upload with drag and drop support
+- **💬 Feedback System** - Built-in user feedback collection
 
-## Contribution
-The application is free to use and exprementation and open to any modification required.<br>
-If used for a project, the developers must appropriately credit the original developers of this web application and the fine-tuned pegasus model.
+## 🚀 Live Demo
+
+[Deploy your own instance](#deployment) or run locally following the setup instructions below.
+
+## 🛠️ Technology Stack
+
+- **Backend**: Flask (Python)
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **AI Model**: [Legal Pegasus](https://huggingface.co/nsi319/legal-pegasus)
+- **Text Processing**: KeyBERT for vocabulary simplification
+- **Styling**: Modern CSS with CSS Grid and Flexbox
+- **Deployment**: Heroku, Railway, Render compatible
+
+## 📋 How It Works
+
+1. **Upload**: Drag and drop or select your Terms & Conditions document
+2. **Configure**: Set minimum and maximum word limits for summary sections
+3. **Process**: AI analyzes the document and extracts key clauses
+4. **Simplify**: Complex legal jargon is replaced with everyday language
+5. **Download**: Get your simplified summary as a PDF file
+
+## 🏃‍♂️ Quick Start
+
+### Local Development
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd terms-conditions-summarizer
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run the application**
+   ```bash
+   python app.py
+   ```
+
+4. **Open your browser**
+   Navigate to `http://localhost:5000`
+
+## 🌐 Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions for:
+- Heroku
+- Railway
+- Render
+- DigitalOcean App Platform
+
+### Quick Heroku Deploy
+
+```bash
+heroku create your-app-name
+git push heroku main
+heroku open
+```
+
+## 📱 Responsive Design
+
+The application features a mobile-first responsive design that adapts to all screen sizes:
+
+- **Mobile (< 480px)**: Optimized touch interface with stacked layouts
+- **Tablet (480px - 768px)**: Balanced layout with improved spacing
+- **Desktop (> 768px)**: Full-featured layout with side-by-side elements
+
+## 🎨 UI Features
+
+- **Modern Design System**: Consistent colors, typography, and spacing
+- **Smooth Animations**: Subtle transitions and hover effects
+- **Loading States**: Visual feedback during file processing
+- **Error Handling**: User-friendly error messages and validation
+- **Accessibility**: Semantic HTML and keyboard navigation support
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🙏 Acknowledgments
+
+- [Legal Pegasus Model](https://huggingface.co/nsi319/legal-pegasus) for legal text summarization
+- [KeyBERT](https://pypi.org/project/keybert/) for vocabulary simplification
+- Modern web design principles and responsive design patterns
 

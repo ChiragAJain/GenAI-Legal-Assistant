@@ -76,3 +76,8 @@ def collect_feedback():
         return jsonify({"status": "Feedback received"})
     except Exception as e:
         return jsonify({"error": f"Failed to save feedback: {str(e)}"}), 500
+
+if __name__ == '__main__':
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
