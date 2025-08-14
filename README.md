@@ -36,7 +36,7 @@ A modern, responsive web application that simplifies complex legal documents usi
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/ChiragAJain/Terms-and-Condition-Summariser-using-NLP
    cd terms-conditions-summarizer
    ```
 
