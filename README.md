@@ -4,14 +4,14 @@ A modern, responsive web application that simplifies complex legal documents usi
 
 ## ✨ Features
 
-- **📱 Fully Responsive Design** - Works seamlessly on mobile, tablet, and desktop
-- **🤖 AI-Powered Summarization** - Uses Legal Pegasus model for accurate legal text processing
-- **📄 Multiple File Formats** - Supports PDF, TXT, and DOCX files (up to 8MB)
-- **⚙️ Customizable Output** - Adjust summary length with min/max word limits
-- **💾 PDF Export** - Download summaries as formatted PDF files
-- **🎨 Modern UI/UX** - Clean, intuitive interface with smooth animations
-- **📱 Drag & Drop** - Easy file upload with drag and drop support
-- **💬 Feedback System** - Built-in user feedback collection
+- **Fully Responsive Design** - Works seamlessly on mobile, tablet, and desktop
+- **AI-Powered Summarization** - Uses Legal Pegasus model for accurate legal text processing
+- **Multiple File Formats** - Supports PDF, TXT, and DOCX files (up to 8MB)
+- **⚙Customizable Output** - Adjust summary length with min/max word limits
+- **PDF Export** - Download summaries as formatted PDF files
+- **Modern UI/UX** - Clean, intuitive interface with smooth animations
+- **Drag & Drop** - Easy file upload with drag and drop support
+- **Feedback System** - Built-in user feedback collection
 
 ## 🛠️ Technology Stack
 
@@ -20,7 +20,7 @@ A modern, responsive web application that simplifies complex legal documents usi
 - **AI Model**: [Legal Pegasus](https://huggingface.co/nsi319/legal-pegasus)
 - **Text Processing**: KeyBERT for vocabulary simplification
 - **Styling**: Modern CSS with CSS Grid and Flexbox
-- **Deployment**: Heroku, Railway, Render compatible
+- **Deployment**: Railway
 
 ## 📋 How It Works
 
