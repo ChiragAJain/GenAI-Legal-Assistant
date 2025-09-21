@@ -1,0 +1,51 @@
+# Google Cloud Build configuration for GenAI Legal Assistant
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'gcr.io/$PROJECT_ID/genai-legal-assistant:$COMMIT_SHA',
+      '-t', 'gcr.io/$PROJECT_ID/genai-legal-assistant:latest',
+      '.'
+    ]
+
+  # Push the Docker image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push', 'gcr.io/$PROJECT_ID/genai-legal-assistant:$COMMIT_SHA'
+    ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push', 'gcr.io/$PROJECT_ID/genai-legal-assistant:latest'
+    ]
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: [
+      'run', 'deploy', 'genai-legal-assistant',
+      '--image', 'gcr.io/$PROJECT_ID/genai-legal-assistant:$COMMIT_SHA',
+      '--region', 'us-central1',
+      '--platform', 'managed',
+      '--allow-unauthenticated',
+      '--memory', '1Gi',
+      '--cpu', '1',
+      '--timeout', '300',
+      '--max-instances', '10',
+      '--set-env-vars', 'FLASK_ENV=production,PORT=8080',
+      '--set-secrets', 'GEMINI_API_KEY=gemini-api-key:latest'
+    ]
+
+# Store images in Container Registry
+images:
+  - 'gcr.io/$PROJECT_ID/genai-legal-assistant:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/genai-legal-assistant:latest'
+
+# Build options
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+# Timeout for the entire build
+timeout: '1200s'

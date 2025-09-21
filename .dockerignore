@@ -1,0 +1,63 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache
+.coverage
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local development
+.env.local
+.env.development
+*.log
+
+# Documentation
+README.md
+docs/
+
+# Test files
+test_*.py
+*_test.py
+tests/
+
+# Build artifacts
+build/
+dist/
+
+# Temporary files
+temp_*
+*.tmp
+
+# Local database
+*.db
+*.sqlite
+
+# Feedback data (don't include in production)
+feedback.json
+
+# Local scripts
+run_local.*
+setup_local.py
+test_*.py
