@@ -1,24 +1,42 @@
 from flask import Flask, request, jsonify, send_file, render_template
 import os
 
+# Global variables to store document text for Q&A
+current_document_text = ""
+current_document_name = ""
+
 try:
-    # Try to import the full AI-powered version
-    from summariser import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
-    AI_MODE = True
-    print("✅ AI mode loaded successfully")
+    # Try to import the GenAI-powered version first
+    from summariser_genai import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback, answer_question
+    AI_MODE = "GenAI"
+    print(" GenAI mode loaded successfully")
 except ImportError as e:
-    # Fallback to lightweight version for deployment
-    print(f"⚠️ AI mode failed to load: {e}")
+    print(f" GenAI mode failed to load: {e}")
     try:
-        from summariser_lite import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
-        AI_MODE = False
-        print("✅ Lite mode loaded successfully")
+        # Fallback to the full AI-powered version
+        from summariser import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
+        AI_MODE = "AI"
+        print(" AI mode loaded successfully")
+        # Add dummy answer_question function for compatibility
+        def answer_question(text, question):
+            return "Q&A feature requires GenAI mode. Please set GEMINI_API_KEY environment variable."
     except ImportError as e2:
-        print(f"❌ Both modes failed to load: {e2}")
-        raise
+        # Final fallback to lightweight version
+        print(f" AI mode failed to load: {e2}")
+        try:
+            from summariser_lite import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
+            AI_MODE = "Lite"
+            print(" Lite mode loaded successfully")
+            # Add dummy answer_question function for compatibility
+            def answer_question(text, question):
+                return "Q&A feature requires GenAI mode. Please set GEMINI_API_KEY environment variable."
+        except ImportError as e3:
+            print(f" All modes failed to load: {e3}")
+            raise
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Set file size limit to 8MB
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'  # Switch to SQLite
 
 @app.route('/')
 def index():
@@ -26,11 +44,13 @@ def index():
 
 @app.route('/health')
 def health_check():
-    """Health check endpoint for Railway deployment."""
-    return jsonify({"status": "healthy", "mode": "AI" if AI_MODE else "Lite"}), 200
+    """Health check endpoint for deployment."""
+    return jsonify({"status": "healthy", "mode": AI_MODE}), 200
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    global current_document_text, current_document_name
+    
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
@@ -57,6 +77,10 @@ def upload_file():
             os.remove(file_path)
             return jsonify({"error": "Unsupported file type"}), 400
 
+        # Store document text for Q&A functionality
+        current_document_text = text
+        current_document_name = file.filename
+
         # Summarize sections with custom length
         sections = split_into_sections(text)
         section_summaries = summarize_sections(sections, min_length=custom_min_length, max_length=custom_max_length)
@@ -72,16 +96,43 @@ def upload_file():
         # Respond with summary and download link
         return jsonify({
             "summary": final_summary,
-            "download_link": f"/download/summary_output.pdf"
+            "download_link": f"/download/summary_output.pdf",
+            "has_document": True,
+            "document_name": file.filename
         })
 
     except Exception as e:
-        os.remove(file_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
         return jsonify({"error": str(e)}), 500
 
 @app.route('/download/<filename>', methods=['GET'])
 def download_file(filename):
     return send_file(f"static/{filename}", as_attachment=True)
+
+# New Q&A endpoint
+@app.route('/ask', methods=['POST'])
+def ask_question():
+    global current_document_text, current_document_name
+    
+    if not current_document_text:
+        return jsonify({"error": "No document uploaded. Please upload a document first."}), 400
+    
+    data = request.json
+    question = data.get("question", "").strip()
+    
+    if not question:
+        return jsonify({"error": "No question provided"}), 400
+    
+    try:
+        answer = answer_question(current_document_text, question)
+        return jsonify({
+            "answer": answer,
+            "question": question,
+            "document_name": current_document_name
+        })
+    except Exception as e:
+        return jsonify({"error": f"Failed to answer question: {str(e)}"}), 500
 
 # Endpoint to collect user feedback
 @app.route('/feedback', methods=['POST'])

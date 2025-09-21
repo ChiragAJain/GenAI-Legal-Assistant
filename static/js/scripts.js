@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedbackForm = document.getElementById('feedbackForm');
     const feedbackTextarea = document.getElementById('feedback');
     const feedbackStatus = document.getElementById('feedbackStatus');
+    
+    // Q&A elements
+    const qaSection = document.getElementById('qaSection');
+    const qaForm = document.getElementById('qaForm');
+    const questionInput = document.getElementById('questionInput');
+    const qaHistory = document.getElementById('qaHistory');
 
     // File input handling with drag and drop
     const fileUploadLabel = document.querySelector('.file-upload-label');
@@ -103,8 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Hide previous results and show loader
         resultDiv.style.display = 'none';
+        qaSection.style.display = 'none';
         feedbackSection.style.display = 'none';
         loader.style.display = 'flex';
+        
+        // Clear previous Q&A history
+        qaHistory.innerHTML = '';
 
         // Scroll to loader
         loader.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -125,12 +135,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 summaryText.innerHTML = formatSummaryText(data.summary);
                 downloadLink.href = data.download_link;
                 resultDiv.style.display = 'block';
+                
+                // Show Q&A section if document is available
+                if (data.has_document) {
+                    qaSection.style.display = 'block';
+                }
+                
                 feedbackSection.style.display = 'block';
                 
                 // Scroll to results
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 
-                showNotification('Summary generated successfully!', 'success');
+                showNotification('Analysis generated successfully!', 'success');
             } else {
                 showNotification(data.error || 'An error occurred while processing your file', 'error');
             }
@@ -138,6 +154,67 @@ document.addEventListener('DOMContentLoaded', () => {
             loader.style.display = 'none';
             showNotification('Network error. Please check your connection and try again.', 'error');
             console.error('Upload error:', error);
+        }
+    });
+
+    // Handle Q&A form submission
+    qaForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const question = questionInput.value.trim();
+        if (!question) {
+            showNotification('Please enter a question', 'error');
+            return;
+        }
+        
+        // Add question to history immediately
+        const qaItem = document.createElement('div');
+        qaItem.className = 'qa-item';
+        qaItem.innerHTML = `
+            <div class="qa-question">Q: ${question}</div>
+            <div class="qa-loading">
+                <div class="spinner"></div>
+                <span>Getting answer...</span>
+            </div>
+        `;
+        qaHistory.appendChild(qaItem);
+        
+        // Clear input and disable form
+        const askBtn = qaForm.querySelector('.ask-btn');
+        const originalText = askBtn.querySelector('.btn-text').textContent;
+        askBtn.querySelector('.btn-text').textContent = 'Asking...';
+        askBtn.disabled = true;
+        questionInput.value = '';
+        
+        // Scroll to the new question
+        qaItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        try {
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            });
+            
+            const data = await response.json();
+            
+            // Replace loading with answer
+            const loadingDiv = qaItem.querySelector('.qa-loading');
+            if (response.ok && data.answer) {
+                loadingDiv.outerHTML = `<div class="qa-answer">${data.answer}</div>`;
+            } else {
+                loadingDiv.outerHTML = `<div class="qa-answer" style="color: var(--error-color);">Error: ${data.error || 'Failed to get answer'}</div>`;
+            }
+            
+        } catch (error) {
+            // Replace loading with error
+            const loadingDiv = qaItem.querySelector('.qa-loading');
+            loadingDiv.outerHTML = `<div class="qa-answer" style="color: var(--error-color);">Network error. Please try again.</div>`;
+            console.error('Q&A error:', error);
+        } finally {
+            // Re-enable form
+            askBtn.querySelector('.btn-text').textContent = originalText;
+            askBtn.disabled = false;
         }
     });
 

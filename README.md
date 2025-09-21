@@ -1,34 +1,46 @@
-# Terms and Conditions Summarizer
+# GenAI Legal Assistant
 
-A modern, responsive web application that simplifies complex legal documents using AI. Upload your Terms & Conditions files and get easy-to-understand summaries with customizable length settings.
+A modern, intelligent web application that transforms complex legal documents into clear, actionable insights using Google's Generative AI. Upload your Terms & Conditions, contracts, or legal documents and get comprehensive analysis with interactive Q&A capabilities.
 
 ## ✨ Features
 
+### 🧠 GenAI-Powered Analysis
+- **Abstractive Summarization** - Uses Google's Gemini AI for human-like summaries
+- **Interactive Q&A** - Ask specific questions about your document and get instant answers
+- **Risk Analysis** - Automatically identifies potentially risky or non-standard clauses
+- **Plain Language Translation** - Complex legal jargon explained in simple terms
+
+### 📱 Modern User Experience
 - **Fully Responsive Design** - Works seamlessly on mobile, tablet, and desktop
-- **AI-Powered Summarization** - Uses Legal Pegasus model for accurate legal text processing
 - **Multiple File Formats** - Supports PDF, TXT, and DOCX files (up to 8MB)
-- **⚙Customizable Output** - Adjust summary length with min/max word limits
-- **PDF Export** - Download summaries as formatted PDF files
-- **Modern UI/UX** - Clean, intuitive interface with smooth animations
-- **Drag & Drop** - Easy file upload with drag and drop support
-- **Feedback System** - Built-in user feedback collection
+- **Drag & Drop Upload** - Easy file upload with visual feedback
+- **Real-time Processing** - Fast document analysis with progress indicators
+- **PDF Export** - Download comprehensive analysis as formatted PDF files
+
+### 🔍 Smart Features
+- **Document Intelligence** - Understands legal document structure and context
+- **Customizable Analysis** - Adjust summary depth and focus areas
+- **Feedback System** - Built-in user feedback collection for continuous improvement
+- **Multi-mode Support** - Falls back gracefully when GenAI is unavailable
 
 ## 🛠️ Technology Stack
 
-- **Backend**: Flask (Python)
+- **Backend**: Flask (Python) with SQLite database
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **AI Model**: [Legal Pegasus](https://huggingface.co/nsi319/legal-pegasus)
-- **Text Processing**: KeyBERT for vocabulary simplification
+- **GenAI**: Google Gemini Pro for document analysis and Q&A
+- **Fallback AI**: Legal Pegasus model for offline processing
+- **Document Processing**: PyPDF2, python-docx for file handling
 - **Styling**: Modern CSS with CSS Grid and Flexbox
-- **Deployment**: Railway
+- **Deployment**: Google Cloud Run (Docker-based)
 
 ## 📋 How It Works
 
-1. **Upload**: Drag and drop or select your Terms & Conditions document
-2. **Configure**: Set minimum and maximum word limits for summary sections
-3. **Process**: AI analyzes the document and extracts key clauses
-4. **Simplify**: Complex legal jargon is replaced with everyday language
-5. **Download**: Get your simplified summary as a PDF file
+1. **Upload**: Drag and drop or select your legal document (PDF, TXT, or DOCX)
+2. **AI Analysis**: Google's Gemini AI analyzes the document structure and content
+3. **Smart Summary**: Get key points, rights, obligations, and important terms
+4. **Risk Assessment**: Automatically identifies potentially problematic clauses
+5. **Interactive Q&A**: Ask specific questions about any part of the document
+6. **Export**: Download comprehensive analysis as a formatted PDF
 
 ## 🏃‍♂️ Quick Start
 
@@ -37,21 +49,40 @@ A modern, responsive web application that simplifies complex legal documents usi
 1. **Clone the repository**
    ```bash
    git clone https://github.com/ChiragAJain/Terms-and-Condition-Summariser-using-NLP
-   cd terms-conditions-summarizer
+   cd genai-legal-assistant
    ```
 
-2. **Install dependencies**
+2. **Set up environment variables**
+   ```bash
+   export GEMINI_API_KEY="your-gemini-api-key-here"
+   ```
+
+3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Run the application**
+4. **Run the application**
    ```bash
    python app.py
    ```
 
-4. **Open your browser**
+5. **Open your browser**
    Navigate to `http://localhost:5000`
+
+### Google Cloud Run Deployment
+
+1. **Build and deploy**
+   ```bash
+   gcloud run deploy genai-legal-assistant \
+     --source . \
+     --platform managed \
+     --region us-central1 \
+     --set-env-vars GEMINI_API_KEY="your-api-key"
+   ```
+
+2. **Set up environment variables in Cloud Run console**
+   - `GEMINI_API_KEY`: Your Google AI Studio API key
 
 
 ## 📱 Responsive Design
@@ -78,9 +109,25 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 
 This project is open source and available under the [MIT License](LICENSE).
 
+## 🔧 Configuration
+
+### Environment Variables
+
+- `GEMINI_API_KEY`: Required for GenAI features. Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+- `PORT`: Server port (default: 5000, Cloud Run uses 8080)
+
+### Operating Modes
+
+The application automatically detects available dependencies and operates in the best available mode:
+
+1. **GenAI Mode**: Full features with Google Gemini AI (requires API key)
+2. **AI Mode**: Fallback to Legal Pegasus model (requires ML dependencies)
+3. **Lite Mode**: Rule-based analysis (minimal dependencies)
+
 ## 🙏 Acknowledgments
 
+- [Google Gemini AI](https://ai.google.dev/) for advanced language understanding
 - [Legal Pegasus Model](https://huggingface.co/nsi319/legal-pegasus) for legal text summarization
-- [KeyBERT](https://pypi.org/project/keybert/) for vocabulary simplification
 - Modern web design principles and responsive design patterns
+- Google Cloud Run for scalable deployment
 

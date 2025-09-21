@@ -30,10 +30,12 @@
             <div class="hero-section">
                 <h2 class="hero-title">Upload Your Terms & Conditions</h2>
                 <p class="hero-description">Get an easy-to-understand summary of complex legal documents in seconds</p>
-                {% if ai_mode %}
-                <div class="mode-indicator ai-mode">🤖 AI-Powered Analysis</div>
+                {% if ai_mode == "GenAI" %}
+                <div class="mode-indicator genai-mode"> GenAI Legal Assistant</div>
+                {% elif ai_mode == "AI" %}
+                <div class="mode-indicator ai-mode"> AI-Powered Analysis</div>
                 {% else %}
-                <div class="mode-indicator lite-mode">⚡ Fast Rule-Based Analysis</div>
+                <div class="mode-indicator lite-mode"> Fast Rule-Based Analysis</div>
                 {% endif %}
             </div>
 
@@ -85,7 +87,7 @@
             <!-- Display Summary Result -->
             <div id="result" class="result-section" style="display: none;">
                 <div class="result-header">
-                    <h3 class="result-title">Generated Summary</h3>
+                    <h3 class="result-title">Generated Analysis</h3>
                     <div class="result-actions">
                         <a id="downloadLink" href="" class="download-btn" target="_blank">
                             <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -100,6 +102,31 @@
                 <div class="summary-content">
                     <p id="summaryText" class="summary-text"></p>
                 </div>
+            </div>
+
+            <!-- Interactive Q&A Section -->
+            <div id="qaSection" class="qa-section" style="display: none;">
+                <div class="qa-header">
+                    <h3 class="qa-title">Ask Questions About Your Document</h3>
+                    <p class="qa-description">Get specific answers about clauses, terms, or implications</p>
+                </div>
+                
+                <form id="qaForm" class="qa-form">
+                    <div class="question-input-wrapper">
+                        <label for="questionInput" class="question-label">Your Question</label>
+                        <input type="text" id="questionInput" name="question" 
+                               placeholder="e.g., What does this say about data sharing?" 
+                               class="question-input" required>
+                        <button type="submit" class="ask-btn">
+                            <span class="btn-text">Ask</span>
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="qaHistory" class="qa-history"></div>
             </div>
 
             <!-- Feedback Form -->
