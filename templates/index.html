@@ -28,8 +28,9 @@
     <main class="main-content">
         <div class="container">
             <div class="hero-section">
-                <h2 class="hero-title">Upload Your Terms & Conditions</h2>
-                <p class="hero-description">Get an easy-to-understand summary of complex legal documents in seconds</p>
+                <h2 class="hero-title">Analyze Your Legal Documents</h2>
+                <p class="hero-description">Upload files or paste text to get easy-to-understand summaries of complex
+                    legal documents in seconds</p>
                 {% if ai_mode == "GenAI" %}
                 <div class="mode-indicator genai-mode"> GenAI Legal Assistant</div>
                 {% elif ai_mode == "AI" %}
@@ -44,21 +45,56 @@
                 <p class="loader-text">Analyzing document and generating summary...</p>
             </div>
 
+            <!-- Input Method Selection -->
+            <div class="input-method-section">
+                <div class="input-method-tabs">
+                    <button type="button" class="tab-btn active" data-tab="file">📁 Upload File</button>
+                    <button type="button" class="tab-btn" data-tab="text">📝 Paste Text</button>
+                </div>
+            </div>
+
             <!-- File Upload Form -->
             <div class="upload-section">
                 <form id="uploadForm" class="upload-form">
-                    <div class="file-upload-wrapper">
-                        <label for="file" class="file-upload-label">
-                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                <polyline points="7,10 12,15 17,10" />
-                                <line x1="12" y1="15" x2="12" y2="3" />
-                            </svg>
-                            <span class="upload-text">Choose file or drag & drop</span>
-                            <span class="file-types">PDF, TXT, DOCX (max 8MB)</span>
-                        </label>
-                        <input type="file" id="file" name="file" accept=".txt,.pdf,.docx" required>
-                        <div class="file-info" id="fileInfo" style="display: none;"></div>
+                    <!-- File Upload Tab -->
+                    <div id="fileTab" class="input-tab active">
+                        <div class="file-upload-wrapper">
+                            <label for="file" class="file-upload-label">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7,10 12,15 17,10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                                <span class="upload-text">Choose file or drag & drop</span>
+                                <span class="file-types">PDF, TXT, DOCX (max 8MB)</span>
+                            </label>
+                            <input type="file" id="file" name="file" accept=".txt,.pdf,.docx">
+                            <div class="file-info" id="fileInfo" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Text Input Tab -->
+                    <div id="textTab" class="input-tab">
+                        <div class="text-input-wrapper">
+                            <label for="textInput" class="text-input-label">
+                                <svg class="text-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14,2 14,8 20,8" />
+                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                    <polyline points="10,9 9,9 8,9" />
+                                </svg>
+                                <span class="text-input-title">Paste Your Legal Document</span>
+                                <span class="text-input-description">Copy and paste terms & conditions, privacy policy,
+                                    or contract text</span>
+                            </label>
+                            <textarea id="textInput" name="text" placeholder="Paste your legal document text here..."
+                                rows="12"></textarea>
+                            <div class="text-info" id="textInfo">
+                                <span class="char-count">0 characters</span>
+                                <span class="word-count">0 words</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="settings-section">
@@ -110,13 +146,12 @@
                     <h3 class="qa-title">Ask Questions About Your Document</h3>
                     <p class="qa-description">Get specific answers about clauses, terms, or implications</p>
                 </div>
-                
+
                 <form id="qaForm" class="qa-form">
                     <div class="question-input-wrapper">
                         <label for="questionInput" class="question-label">Your Question</label>
-                        <input type="text" id="questionInput" name="question" 
-                               placeholder="e.g., What does this say about data sharing?" 
-                               class="question-input" required>
+                        <input type="text" id="questionInput" name="question"
+                            placeholder="e.g., What does this say about data sharing?" class="question-input" required>
                         <button type="submit" class="ask-btn">
                             <span class="btn-text">Ask</span>
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -125,7 +160,7 @@
                         </button>
                     </div>
                 </form>
-                
+
                 <div id="qaHistory" class="qa-history"></div>
             </div>
 
@@ -147,7 +182,7 @@
 
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 T&C Summarizer. Simplifying legal documents with AI.</p>
+            <p>&copy; 2025A T&C Summarizer. Simplifying legal documents with AI.</p>
         </div>
     </footer>
 

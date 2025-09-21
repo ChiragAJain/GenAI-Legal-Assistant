@@ -16,6 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const qaForm = document.getElementById('qaForm');
     const questionInput = document.getElementById('questionInput');
     const qaHistory = document.getElementById('qaHistory');
+    
+    // Input method elements
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const inputTabs = document.querySelectorAll('.input-tab');
+    const textInput = document.getElementById('textInput');
+    const textInfo = document.getElementById('textInfo');
+    const charCount = textInfo.querySelector('.char-count');
+    const wordCount = textInfo.querySelector('.word-count');
 
     // File input handling with drag and drop
     const fileUploadLabel = document.querySelector('.file-upload-label');
@@ -37,6 +45,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle dropped files
     fileUploadLabel.addEventListener('drop', handleDrop, false);
+
+    // Handle tab switching
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabName = btn.dataset.tab;
+            
+            // Update tab buttons
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update tab content
+            inputTabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Clear previous selections/inputs
+            if (tabName === 'file') {
+                textInput.value = '';
+                updateTextInfo();
+            } else {
+                fileInput.value = '';
+                fileInfo.style.display = 'none';
+            }
+        });
+    });
+
+    // Handle text input changes
+    textInput.addEventListener('input', updateTextInfo);
+    textInput.addEventListener('paste', () => {
+        // Update info after paste event completes
+        setTimeout(updateTextInfo, 10);
+    });
 
     function preventDefaults(e) {
         e.preventDefault();
@@ -96,13 +135,40 @@ document.addEventListener('DOMContentLoaded', () => {
         fileInfo.style.borderColor = 'var(--success-color)';
     }
 
+    function updateTextInfo() {
+        const text = textInput.value;
+        const chars = text.length;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        
+        charCount.textContent = `${chars.toLocaleString()} characters`;
+        wordCount.textContent = `${words.toLocaleString()} words`;
+        
+        // Show warning for very long texts
+        if (chars > 50000) {
+            charCount.style.color = 'var(--warning-color)';
+            charCount.textContent += ' (may be truncated)';
+        } else {
+            charCount.style.color = 'var(--text-secondary)';
+        }
+    }
+
     // Handle form submission
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        if (!fileInput.files.length) {
-            showNotification('Please select a file first', 'error');
-            return;
+        // Check which input method is active
+        const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+        
+        if (activeTab === 'file') {
+            if (!fileInput.files.length) {
+                showNotification('Please select a file first', 'error');
+                return;
+            }
+        } else {
+            if (!textInput.value.trim()) {
+                showNotification('Please enter some text to analyze', 'error');
+                return;
+            }
         }
 
         const formData = new FormData(uploadForm);
@@ -120,12 +186,32 @@ document.addEventListener('DOMContentLoaded', () => {
         loader.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         try {
-            const response = await fetch('/upload', { 
-                method: 'POST', 
-                body: formData 
-            });
+            let response, data;
             
-            const data = await response.json();
+            if (activeTab === 'file') {
+                // File upload
+                response = await fetch('/upload', { 
+                    method: 'POST', 
+                    body: formData 
+                });
+            } else {
+                // Text input
+                const textData = {
+                    text: textInput.value.trim(),
+                    min_length: document.getElementById('min_length').value,
+                    max_length: document.getElementById('max_length').value
+                };
+                
+                response = await fetch('/analyze-text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(textData)
+                });
+            }
+            
+            data = await response.json();
 
             // Hide loader
             loader.style.display = 'none';
@@ -201,7 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Replace loading with answer
             const loadingDiv = qaItem.querySelector('.qa-loading');
             if (response.ok && data.answer) {
-                loadingDiv.outerHTML = `<div class="qa-answer">${data.answer}</div>`;
+                // Format the answer text using the same formatting function
+                const formattedAnswer = formatSummaryText(data.answer);
+                loadingDiv.outerHTML = `<div class="qa-answer">${formattedAnswer}</div>`;
             } else {
                 loadingDiv.outerHTML = `<div class="qa-answer" style="color: var(--error-color);">Error: ${data.error || 'Failed to get answer'}</div>`;
             }
@@ -272,9 +360,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatSummaryText(rawText) {
         /**
-         * Enhanced text formatting for better readability
+         * Enhanced text formatting for GenAI responses with markdown support
          */
         let formattedText = rawText;
+        
+        // First, handle markdown-style formatting from GenAI
+        // Process in order: bold first, then italic to avoid conflicts
+        
+        // Step 1: Handle bold (**text**) first
+        formattedText = formattedText.replace(
+            /\*\*([^*\n]+?)\*\*/g,
+            '<strong>$1</strong>'
+        );
+        
+        // Step 2: Handle italic (*text*) but avoid already processed bold text
+        // Split by HTML tags to avoid processing inside tags
+        const parts = formattedText.split(/(<[^>]*>)/);
+        for (let i = 0; i < parts.length; i++) {
+            // Only process text parts (not HTML tags)
+            if (!parts[i].startsWith('<')) {
+                // Replace single asterisks with italic, but not if they're remnants of bold processing
+                parts[i] = parts[i].replace(
+                    /\*([^*\n]+?)\*/g,
+                    '<em>$1</em>'
+                );
+            }
+        }
+        formattedText = parts.join('');
+        
+        // Format markdown headers (## Header)
+        formattedText = formattedText.replace(
+            /^##\s+(.+)$/gm,
+            '<h2>$1</h2>'
+        );
+        
+        // Format markdown headers (### Header)
+        formattedText = formattedText.replace(
+            /^###\s+(.+)$/gm,
+            '<h3>$1</h3>'
+        );
         
         // Format main headers (surrounded by =)
         formattedText = formattedText.replace(
@@ -288,10 +412,28 @@ document.addEventListener('DOMContentLoaded', () => {
             '<div class="section-header">$2</div>'
         );
         
+        // Format GenAI section headers (lines with ** at start and end)
+        formattedText = formattedText.replace(
+            /^<strong>([^<]+)<\/strong>:?\s*$/gm,
+            '<div class="genai-section-header">$1</div>'
+        );
+        
+        // Format bullet points (*, •, or - at start of line)
+        formattedText = formattedText.replace(
+            /^[\*•\-]\s*(.+)$/gm,
+            '<div class="bullet-point">$1</div>'
+        );
+        
         // Format numbered points (1. 2. 3. etc.)
         formattedText = formattedText.replace(
             /^(\d+\.\s+)(.+)$/gm,
             '<div class="numbered-point"><strong>$1</strong>$2</div>'
+        );
+        
+        // Format risk indicators with emojis
+        formattedText = formattedText.replace(
+            /^(🚨|⚠️|ℹ️)\s*(.+)$/gm,
+            '<div class="risk-indicator risk-$1"><span class="risk-emoji">$1</span> $2</div>'
         );
         
         // Format key terms
@@ -312,24 +454,22 @@ document.addEventListener('DOMContentLoaded', () => {
             '<hr class="separator">'
         );
         
-        // Format subsection headers (lines ending with colon and in caps)
-        formattedText = formattedText.replace(
-            /^([A-Z\s&]{3,}):$/gm,
-            '<h3>$1</h3>'
-        );
-        
-        // Convert line breaks to proper HTML
-        formattedText = formattedText.replace(/\n\n/g, '</p><p>');
+        // Convert line breaks to proper HTML (preserve double line breaks as paragraph breaks)
+        formattedText = formattedText.replace(/\n\n+/g, '</p><p>');
         formattedText = formattedText.replace(/\n/g, '<br>');
         
-        // Wrap in paragraphs
-        if (!formattedText.startsWith('<')) {
+        // Wrap in paragraphs if not already wrapped
+        if (!formattedText.includes('<h1>') && !formattedText.includes('<div')) {
             formattedText = '<p>' + formattedText + '</p>';
         }
         
-        // Clean up empty paragraphs
+        // Clean up empty paragraphs and fix paragraph structure
         formattedText = formattedText.replace(/<p><\/p>/g, '');
         formattedText = formattedText.replace(/<p><br><\/p>/g, '');
+        formattedText = formattedText.replace(/<p>(<div[^>]*>)/g, '$1');
+        formattedText = formattedText.replace(/(<\/div>)<\/p>/g, '$1');
+        formattedText = formattedText.replace(/<p>(<h[1-6][^>]*>)/g, '$1');
+        formattedText = formattedText.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
         
         return formattedText;
     }
@@ -376,6 +516,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 300);
         }, 5000);
     }
+
+    // Initialize text info
+    updateTextInfo();
 
     // Add some additional CSS for notifications
     const style = document.createElement('style');

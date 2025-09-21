@@ -153,8 +153,56 @@ def compile_final_summary(summaries):
     return final_summary
 
 def clean_text_for_pdf(text):
-    """Clean text for PDF compatibility."""
-    return text.encode('latin-1', 'replace').decode('latin-1')
+    """Clean text for PDF compatibility by replacing Unicode characters with ASCII equivalents."""
+    # Dictionary of Unicode characters to ASCII replacements
+    unicode_replacements = {
+        '•': '* ',      # Bullet point
+        '◦': '- ',      # White bullet
+        '▪': '* ',      # Black small square
+        '▫': '- ',      # White small square
+        '–': '-',       # En dash
+        '—': '--',      # Em dash
+        ''': "'",       # Left single quotation mark
+        ''': "'",       # Right single quotation mark
+        '"': '"',       # Left double quotation mark
+        '"': '"',       # Right double quotation mark
+        '…': '...',     # Horizontal ellipsis
+        '©': '(c)',     # Copyright symbol
+        '®': '(R)',     # Registered trademark
+        '™': '(TM)',    # Trademark symbol
+        '°': ' deg',    # Degree symbol
+        '§': 'Section', # Section symbol
+        '¶': 'Para',    # Paragraph symbol
+        '†': '+',       # Dagger
+        '‡': '++',      # Double dagger
+        '★': '*',       # Black star
+        '☆': '*',       # White star
+        '✓': 'v',       # Check mark
+        '✗': 'x',       # Cross mark
+        '→': '->',      # Right arrow
+        '←': '<-',      # Left arrow
+        '↑': '^',       # Up arrow
+        '↓': 'v',       # Down arrow
+        '⚠': '!',       # Warning sign
+        '📋': '[*]',    # Clipboard
+        '🔍': '[?]',    # Magnifying glass
+        '📄': '[DOC]',  # Page facing up
+        '📝': '[EDIT]', # Memo
+        '🔑': '[KEY]',  # Key
+    }
+    
+    # Replace Unicode characters with ASCII equivalents
+    for unicode_char, ascii_replacement in unicode_replacements.items():
+        text = text.replace(unicode_char, ascii_replacement)
+    
+    # Handle any remaining non-ASCII characters by encoding to latin-1 with replacement
+    try:
+        # First try to encode as latin-1
+        text.encode('latin-1')
+        return text
+    except UnicodeEncodeError:
+        # If that fails, replace problematic characters
+        return text.encode('latin-1', 'replace').decode('latin-1')
 
 def save_summary_as_pdf(summary, output_path="static/summary_output.pdf"):
     """Create a professionally formatted PDF."""

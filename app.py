@@ -1,5 +1,9 @@
 from flask import Flask, request, jsonify, send_file, render_template
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Global variables to store document text for Q&A
 current_document_text = ""
@@ -106,6 +110,45 @@ def upload_file():
             os.remove(file_path)
         return jsonify({"error": str(e)}), 500
 
+@app.route('/analyze-text', methods=['POST'])
+def analyze_text():
+    global current_document_text, current_document_name
+    
+    data = request.json
+    text = data.get('text', '').strip()
+    
+    if not text:
+        return jsonify({"error": "No text provided"}), 400
+    
+    # Get optional custom summary length parameters
+    custom_min_length = int(data.get("min_length", 150))
+    custom_max_length = int(data.get("max_length", 300))
+    
+    try:
+        # Store document text for Q&A functionality
+        current_document_text = text
+        current_document_name = "Pasted Text"
+        
+        # Process the text directly
+        sections = split_into_sections(text)
+        section_summaries = summarize_sections(sections, min_length=custom_min_length, max_length=custom_max_length)
+        final_summary = compile_final_summary(section_summaries)
+        
+        # Save summary as PDF
+        pdf_path = "static/summary_output.pdf"
+        save_summary_as_pdf(final_summary, output_path=pdf_path)
+        
+        # Respond with summary and download link
+        return jsonify({
+            "summary": final_summary,
+            "download_link": f"/download/summary_output.pdf",
+            "has_document": True,
+            "document_name": "Pasted Text"
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/download/<filename>', methods=['GET'])
 def download_file(filename):
     return send_file(f"static/{filename}", as_attachment=True)
@@ -134,6 +177,60 @@ def ask_question():
     except Exception as e:
         return jsonify({"error": f"Failed to answer question: {str(e)}"}), 500
 
+@app.route('/test-formatting', methods=['GET'])
+def test_formatting():
+    """Test endpoint to verify bullet point formatting works correctly."""
+    test_content = """**DOCUMENT SUMMARY**
+
+**Key Points:**
+* This is the first key point about the document
+* This is the second key point with more details
+* This is the third key point explaining important aspects
+* This is the fourth key point about user responsibilities
+* This is the fifth key point about terms and conditions
+
+**Your Rights:**
+* You have the right to access your data
+* You have the right to request corrections
+* You have the right to delete your account
+
+**Your Obligations:**
+* You must provide accurate information
+* You must comply with the terms of service
+* You must not misuse the platform
+
+**RISK ANALYSIS**
+
+**HIGH RISK:**
+* Automatic renewal clauses that are difficult to cancel
+* Broad liability limitations that favor the company
+
+**MEDIUM RISK:**
+* Data retention periods that may be excessive
+* Third-party data sharing without clear consent
+
+**POINTS TO NOTE:**
+* Terms may change with limited notice
+* Dispute resolution may be limited to arbitration"""
+
+    try:
+        # Test the formatting functions
+        from summariser_genai import format_content_for_display, clean_text_for_pdf, preprocess_text_for_pdf
+        
+        formatted_content = format_content_for_display(test_content)
+        cleaned_content = clean_text_for_pdf(formatted_content)
+        preprocessed_content = preprocess_text_for_pdf(cleaned_content)
+        
+        return jsonify({
+            "original": test_content,
+            "formatted": formatted_content,
+            "cleaned": cleaned_content,
+            "preprocessed": preprocessed_content,
+            "status": "Formatting test completed successfully"
+        })
+    except Exception as e:
+        return jsonify({"error": f"Formatting test failed: {str(e)}"}), 500
+
 # Endpoint to collect user feedback
 @app.route('/feedback', methods=['POST'])
 def collect_feedback():
@@ -149,6 +246,4 @@ def collect_feedback():
         return jsonify({"error": f"Failed to save feedback: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    import os
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(debug=True, port=5000)

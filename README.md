@@ -31,7 +31,7 @@ A modern, intelligent web application that transforms complex legal documents in
 - **Fallback AI**: Legal Pegasus model for offline processing
 - **Document Processing**: PyPDF2, python-docx for file handling
 - **Styling**: Modern CSS with CSS Grid and Flexbox
-- **Deployment**: Google Cloud Run (Docker-based)
+- **Development**: Local Flask development server
 
 ## 📋 How It Works
 
@@ -44,7 +44,22 @@ A modern, intelligent web application that transforms complex legal documents in
 
 ## 🏃‍♂️ Quick Start
 
-### Local Development
+### Quick Start (Recommended)
+
+**Windows:**
+```cmd
+# Double-click run_local.bat or run in Command Prompt:
+run_local.bat
+```
+
+**macOS/Linux:**
+```bash
+# Make executable and run:
+chmod +x run_local.sh
+./run_local.sh
+```
+
+### Manual Setup
 
 1. **Clone the repository**
    ```bash
@@ -52,37 +67,32 @@ A modern, intelligent web application that transforms complex legal documents in
    cd genai-legal-assistant
    ```
 
-2. **Set up environment variables**
+2. **Run setup script**
    ```bash
-   export GEMINI_API_KEY="your-gemini-api-key-here"
+   python setup_local.py
    ```
 
-3. **Install dependencies**
+3. **Configure API key (optional for GenAI features)**
+   
+   Edit the `.env` file (created automatically) and replace:
+   ```
+   GEMINI_API_KEY=your-gemini-api-key-here
+   ```
+   
+   With your actual API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+
+4. **Test API connection (optional)**
    ```bash
-   pip install -r requirements.txt
+   python test_gemini.py
    ```
 
-4. **Run the application**
+5. **Run the application**
    ```bash
    python app.py
    ```
 
-5. **Open your browser**
+6. **Open your browser**
    Navigate to `http://localhost:5000`
-
-### Google Cloud Run Deployment
-
-1. **Build and deploy**
-   ```bash
-   gcloud run deploy genai-legal-assistant \
-     --source . \
-     --platform managed \
-     --region us-central1 \
-     --set-env-vars GEMINI_API_KEY="your-api-key"
-   ```
-
-2. **Set up environment variables in Cloud Run console**
-   - `GEMINI_API_KEY`: Your Google AI Studio API key
 
 
 ## 📱 Responsive Design
@@ -109,12 +119,41 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 
 This project is open source and available under the [MIT License](LICENSE).
 
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+**"ModuleNotFoundError" when running the app:**
+- Run `python setup_local.py` to install dependencies
+- Make sure you're using Python 3.8 or higher
+
+**GenAI features not working:**
+- Run `python test_gemini.py` to test your API connection
+- Check that your `.env` file has a valid `GEMINI_API_KEY`
+- Make sure the API key is not the placeholder `your-gemini-api-key-here`
+- Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+- Verify your API key has access to Gemini models
+- The app will fall back to rule-based analysis without a valid API key
+
+**File upload not working:**
+- Check that the `static` directory exists (created automatically by setup scripts)
+- Ensure file size is under 8MB
+- Supported formats: PDF, TXT, DOCX
+
+**Port already in use:**
+- Another application might be using port 5000
+- Stop other Flask applications or change the port in `app.py`
+
 ## 🔧 Configuration
 
 ### Environment Variables
 
+The application uses a `.env` file for configuration (created automatically on first run):
+
 - `GEMINI_API_KEY`: Required for GenAI features. Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-- `PORT`: Server port (default: 5000, Cloud Run uses 8080)
+- `FLASK_ENV`: Set to `development` for local development
+- `FLASK_DEBUG`: Set to `True` for debug mode
+- `DATABASE_URL`: SQLite database path (default: `sqlite:///project.db`)
 
 ### Operating Modes
 
@@ -129,5 +168,5 @@ The application automatically detects available dependencies and operates in the
 - [Google Gemini AI](https://ai.google.dev/) for advanced language understanding
 - [Legal Pegasus Model](https://huggingface.co/nsi319/legal-pegasus) for legal text summarization
 - Modern web design principles and responsive design patterns
-- Google Cloud Run for scalable deployment
+- Flask development server for local testing
 
