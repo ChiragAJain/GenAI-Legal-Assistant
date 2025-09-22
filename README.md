@@ -160,7 +160,7 @@ The application uses a `.env` file for configuration (created automatically on f
 The application automatically detects available dependencies and operates in the best available mode:
 
 1. **GenAI Mode**: Full features with Google Gemini AI (requires API key)
-2. **AI Mode**: Fallback to Legal Pegasus model (requires ML dependencies)
+2. **HuggingFace Mode**: Legal Pegasus + KeyBERT analysis (requires ML dependencies)
 3. **Lite Mode**: Rule-based analysis (minimal dependencies)
 
 ## 🙏 Acknowledgments

@@ -17,13 +17,10 @@ try:
 except ImportError as e:
     print(f" GenAI mode failed to load: {e}")
     try:
-        # Fallback to the full AI-powered version
-        from summariser import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback
-        AI_MODE = "AI"
-        print(" AI mode loaded successfully")
-        # Add dummy answer_question function for compatibility
-        def answer_question(text, question):
-            return "Q&A feature requires GenAI mode. Please set GEMINI_API_KEY environment variable."
+        # Fallback to Hugging Face Legal Pegasus + KeyBERT version
+        from summariser_hf import extract_text_from_pdf, extract_text_from_txt, extract_text_from_docx, split_into_sections, summarize_sections, compile_final_summary, save_summary_as_pdf, store_feedback, answer_question
+        AI_MODE = "HuggingFace"
+        print("HuggingFace Legal Pegasus mode loaded successfully")
     except ImportError as e2:
         # Final fallback to lightweight version
         print(f" AI mode failed to load: {e2}")
@@ -33,7 +30,7 @@ except ImportError as e:
             print(" Lite mode loaded successfully")
             # Add dummy answer_question function for compatibility
             def answer_question(text, question):
-                return "Q&A feature requires GenAI mode. Please set GEMINI_API_KEY environment variable."
+                return "Q&A feature requires GenAI mode. Please wait for it to be available."
         except ImportError as e3:
             print(f" All modes failed to load: {e3}")
             raise
@@ -247,6 +244,8 @@ def collect_feedback():
 
 if __name__ == '__main__':
     import os
-    port = int(os.environ.get('PORT', 5000))
-    debug = os.environ.get('FLASK_ENV') != 'production'
-    app.run(host='0.0.0.0', port=port, debug=debug)
+    port = int(os.environ.get('PORT', 8080))  # Cloud Run default port
+    debug = os.environ.get('FLASK_ENV', 'production') == 'development'
+    
+    # Production deployment uses gunicorn, this is for local development only
+    app.run(host='0.0.0.0', port=port, debug=debug, threaded=True)

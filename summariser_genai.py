@@ -34,14 +34,14 @@ if GEMINI_API_KEY and GEMINI_API_KEY != 'your-gemini-api-key-here':
                 model = genai.GenerativeModel(model_name)
                 # Test the model with a simple prompt
                 test_response = model.generate_content("Hello")
-                print(f"✅ Using Gemini model: {model_name}")
+                print(f"Using Gemini model: {model_name}")
                 break
             except Exception as e:
-                print(f"⚠️ Model {model_name} not available: {str(e)}")
+                print(f"Model {model_name} not available: {str(e)}")
                 continue
         
         if not model:
-            print("❌ No available Gemini models found. Listing available models...")
+            print("No available Gemini models found. Listing available models...")
             try:
                 available_models = genai.list_models()
                 print("Available models:")
@@ -53,10 +53,10 @@ if GEMINI_API_KEY and GEMINI_API_KEY != 'your-gemini-api-key-here':
             model = None
             
     except Exception as e:
-        print(f"⚠️ Failed to configure Gemini API: {e}")
+        print(f"Failed to configure Gemini API: {e}")
         model = None
 else:
-    print("⚠️ GEMINI_API_KEY not found or not configured. GenAI features will not work.")
+    print("GEMINI_API_KEY not found or not configured. GenAI features will not work.")
     model = None
 
 def extract_text_from_txt(file_path):

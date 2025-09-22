@@ -33,8 +33,8 @@
                     legal documents in seconds</p>
                 {% if ai_mode == "GenAI" %}
                 <div class="mode-indicator genai-mode"> GenAI Legal Assistant</div>
-                {% elif ai_mode == "AI" %}
-                <div class="mode-indicator ai-mode"> AI-Powered Analysis</div>
+                {% elif ai_mode == "HuggingFace" %}
+                <div class="mode-indicator ai-mode">Legal Pegasus + KeyBERT Analysis</div>
                 {% else %}
                 <div class="mode-indicator lite-mode"> Fast Rule-Based Analysis</div>
                 {% endif %}
