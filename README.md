@@ -31,7 +31,7 @@ A modern, intelligent web application that transforms complex legal documents in
 - **Fallback AI**: Legal Pegasus model for offline processing
 - **Document Processing**: PyPDF2, python-docx for file handling
 - **Styling**: Modern CSS with CSS Grid and Flexbox
-- **Development**: Local Flask development server
+- **Development**: GCP Cloud Run deployment
 
 ## 📋 How It Works
 
@@ -43,21 +43,6 @@ A modern, intelligent web application that transforms complex legal documents in
 6. **Export**: Download comprehensive analysis as a formatted PDF
 
 ## 🏃‍♂️ Quick Start
-
-### Quick Start (Recommended)
-
-**Windows:**
-```cmd
-# Double-click run_local.bat or run in Command Prompt:
-run_local.bat
-```
-
-**macOS/Linux:**
-```bash
-# Make executable and run:
-chmod +x run_local.sh
-./run_local.sh
-```
 
 ### Manual Setup
 
@@ -81,17 +66,12 @@ chmod +x run_local.sh
    
    With your actual API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
 
-4. **Test API connection (optional)**
-   ```bash
-   python test_gemini.py
-   ```
-
-5. **Run the application**
+4. **Run the application**
    ```bash
    python app.py
    ```
 
-6. **Open your browser**
+5. **Open your browser**
    Navigate to `http://localhost:5000`
 
 
