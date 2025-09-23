@@ -51,15 +51,13 @@ A modern, intelligent web application that transforms complex legal documents in
    git clone https://github.com/ChiragAJain/Terms-and-Condition-Summariser-using-NLP
    cd genai-legal-assistant
    ```
-
-2. **Run setup script**
-   ```bash
-   python setup_local.py
+2. **Install the required modules**
    ```
-
+   pip install -r requirements.txt
+   ```
 3. **Configure API key (optional for GenAI features)**
    
-   Edit the `.env` file (created automatically) and replace:
+   Edit the `.env` file and replace:
    ```
    GEMINI_API_KEY=your-gemini-api-key-here
    ```
